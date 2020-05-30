@@ -1,8 +1,9 @@
 import java.util.*;
 import java.lang.*;
 import java.io.*;
-class NQueenProblem
+public class NQueenProblem
  {
+    boolean ans = false;
 	public static void main (String[] args)
 	{
 	    Scanner sc = new Scanner(System.in);
@@ -11,11 +12,14 @@ class NQueenProblem
 	        int n = sc.nextInt();
 	        NQueenProblem g = new NQueenProblem();
 	        g.solveNQueens(n);
+	        System.out.println();
 	    }
 	}
 
     public void solveNQueens(int n) {
         boolean [] colBlock = new boolean [n];
+        boolean [] leftDiagonal = new boolean[2*n];
+        boolean [] rightDiagonal = new boolean[2*n];
         char [] [] board = new char [n][n];
         
         for (int i = 0 ; i < n ; i++) {
@@ -24,66 +28,40 @@ class NQueenProblem
             }
         }
         
-        boolean [] [] diag = new boolean [n][n];
-        NQueen (colBlock, board, diag, 0, n);
+        NQueen (colBlock, board, 0, n, leftDiagonal, rightDiagonal);
+        if (!ans)
+            System.out.print(-1);
     }
     
-    public void NQueen (boolean [] colBlock, char [] [] board, boolean [] [] diag, int row, int n) {
+   public void NQueen (boolean [] colBlock, char [] [] board, int row, int n, boolean [] leftDiagonal, boolean [] rightDiagonal) {
+        //boolean ans = false;
         if (row == n) {
-            //System.out.println("here");
             for (int i = 0 ; i < n ; i++) {
-                for (int j = 0 ; j < n ; j ++) {
-                    System.out.print(board[i][j]);
-                }
-                System.out.println();    
+            	for (int j = 0 ; j < n ; j++) {
+            		System.out.print(board[i][j]);
+            	}
+            	System.out.println();
             }
             System.out.println();
+            ans = true;
             return;
         }
         
         for (int i = 0 ; i < n ; i ++) {
-            if (!colBlock[i] && !diag[row][i]) {
+            int diff = i - row + n - 1;
+            int sum = i + row;
+            if (!colBlock[i] && !rightDiagonal[diff] && !leftDiagonal[sum]) {
                 colBlock[i] = true;
-                diag = blockDiagnol(row, i, diag, n);
+                rightDiagonal[diff] = true;
+                leftDiagonal[sum] = true;
                 board[row][i] = 'Q';
-                NQueen (colBlock, board, diag, row+1, n);
+                NQueen (colBlock, board, row+1, n, leftDiagonal, rightDiagonal);
                 board[row][i] = '.';
-                diag = unblockDiagnol(row, i, diag, n);
+                leftDiagonal[sum] = false;
+                rightDiagonal[diff] = false;
                 colBlock[i] = false;
             }
         }
-    }
-    
-   public boolean [][] blockDiagnol (int row, int col, boolean [][] diag, int n) {
-        int sum = row + col;
-        int diff = col - row;
         
-        for (int i = row+1 ; i < n ; i ++) {
-            
-            int j = diff + i;
-            if (j < n && j >= 0)
-                diag[i][j] = true;
-            j = sum - i;
-            if (j < n && j >= 0)
-                diag[i][j] = true;
-        }
-        
-        return diag;
-    }
-    
-    public boolean [][] unblockDiagnol (int row, int col, boolean [][] diag, int n) {
-        int sum = row + col;
-        int diff = col - row;
-        
-        for (int i = row+1 ; i < n ; i ++) {
-            int j = diff + i;
-            if (j < n && j >= 0)
-                diag[i][j] = false;
-            j = sum - i;
-            if (j < n && j >= 0)
-                diag[i][j] = false;
-        }
-        
-        return diag;
     }
  }
